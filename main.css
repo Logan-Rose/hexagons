@@ -1,0 +1,10 @@
+body{
+    display: flex;
+    padding: 0px;
+    margin: 0px;
+}
+canvas{
+    border: solid 3px black;
+    flex: 1;
+
+}
