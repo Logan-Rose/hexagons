@@ -22,7 +22,7 @@ function pointy_hex_corner(center, size, i){
                 center.y + size * Math.sin(angle_rad))
 }
 
-let size = 30
+let size = 10
 let xDistance = size*1.7
 let yDistance = size*1.5
 function drawGrid(){
@@ -58,29 +58,69 @@ function drawHex(centerX, centerY, size, fill){
 }
 
 
+function fillHexes(){
+    for(let i =0; i*xDistance < WIDTH; i++){
+        for(let j =0; j*yDistance < HEIGHT;j++){
+            if(j %2 ==0){
+                drawHex(i*xDistance,j*yDistance,size, false)
+            } else{
+                drawHex(i*xDistance +(size*0.85),j*yDistance,size, false)
+            }
+            
+        }
+    }
+}
+
+
 canvas.addEventListener('mousemove',
     function(event){
         let xPos
         let yPos
-        if(event.clientX%(size*1.7) < size*0.85){
-            xPos = event.clientX - event.clientX%(size*1.7)
-        } else{
-            xPos = event.clientX - event.clientX%(size*1.7)  + size*1.7
+        let mouseX = event.clientX
+        let mouseY = event.clientY
+
+        context.beginPath();
+        context.arc(mouseX, mouseY, 5,0,Math.PI*2, false);
+        context.strokeStyle = 'red';
+        context.stroke();
+        context.fill();
+        
+
+        
+        yPos = mouseY - mouseY%(size*1.5)
+        
+
+        if(mouseX%(size*1.7) > size*0.85){
+            xPos = mouseX - mouseX%(size*1.7) + size*1.7
+        }else{
+            xPos = mouseX - mouseX%(size*1.7)
+        }
+
+        if(mouseY%(size*1.5) > size*0.75){
+            yPos = mouseY - mouseY%(size*1.5) + size*1.5
+        }else{
+            yPos = mouseY - mouseY%(size*1.5)
         }
         
-        if(event.clientY - event.clientY%(size*1.5)){
-            yPos = event.clientY - event.clientY%(size*1.5)
-        } else{
-            yPos = event.clientY - event.clientY%(size*1.5) + size*1.5
-        }
-        
-        console.log(xPos + "," + yPos)
+
+        // console.log(xPos + "," + yPos)
         if((yPos / (size*1.5)) % 2 == 1){
-            console.log("----" + xPos + "," + yPos)
-            drawHex(xPos + size*0.85, yPos, size, true)
-        } else{
-            drawHex(xPos, yPos, size, true)
+        //   console.log("----" + xPos + "," + yPos)
+            xPos = xPos - 0.85*size
         }
+        
+
+        console.log("-----------")
+        console.log(mouseX + "," + mouseX%(size*1.7) + "," + xPos)
+        console.log(mouseY + "," + mouseY%(size*1.5) + "," + yPos)
+        console.log("-----------")
+
+        drawHex(xPos, yPos, size, true)
+        context.beginPath();
+        context.arc(xPos, yPos, 5,0,Math.PI*2, false);
+        context.strokeStyle = 'red';
+        context.stroke();
+        context.fill();
 
     }
 )
