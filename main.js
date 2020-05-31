@@ -8,9 +8,6 @@ let HEIGHT = h;
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
 
-let cellSize = WIDTH / 40
-
-
 class Point{
     constructor(x, y){
         this.x = x
@@ -25,37 +22,79 @@ function pointy_hex_corner(center, size, i){
                 center.y + size * Math.sin(angle_rad))
 }
 
+let size = 30
+let xDistance = size*1.7
+let yDistance = size*1.5
+function drawGrid(){
+    for(let i =0; i*xDistance < WIDTH; i++){
+        for(let j =0; j*yDistance < HEIGHT;j++){
+            if(j %2 ==0){
+                drawHex(i*xDistance,j*yDistance,size, false)
+            } else{
+                drawHex(i*xDistance +(size*0.85),j*yDistance,size, false)
+            }
+            
+        }
+    }
+}
 
-
-function drawHex(centerX, centerY, size){
+function drawHex(centerX, centerY, size, fill){
     context.beginPath();
     let start = pointy_hex_corner(new Point(centerX,centerY), size, 0)
     context.moveTo(start.x, start.y)
-    console.log(start.y)
     for(let i =1; i < 6; i ++){
         let next = pointy_hex_corner(new Point(centerX,centerY), size, i)
         context.lineTo(next.x, next.y)
-        console.log(next.y)
     }
     
     context.lineTo(start.x, start.y)
     context.strokeStyle = "black";
     context.lineWidth = 3;
+    context.closePath();
+    if(fill){
+        context.fill()
+    }
     context.stroke();
 }
 
-let size = 30
-for(let i =0; i < WIDTH; i = i + (size*1.7)){
-    for(let j =0; j < HEIGHT; j = j + (size*1.5)){
-        let previ = i
-        if(j %2 ==0){
-            drawHex(i,j,size)
+
+canvas.addEventListener('mousemove',
+    function(event){
+        let xPos
+        let yPos
+        if(event.clientX%(size*1.7) < size*0.85){
+            xPos = event.clientX - event.clientX%(size*1.7)
         } else{
-            drawHex(i +(size*0.85),j,size)
+            xPos = event.clientX - event.clientX%(size*1.7)  + size*1.7
         }
         
+        if(event.clientY - event.clientY%(size*1.5)){
+            yPos = event.clientY - event.clientY%(size*1.5)
+        } else{
+            yPos = event.clientY - event.clientY%(size*1.5) + size*1.5
+        }
+        
+        console.log(xPos + "," + yPos)
+        if((yPos / (size*1.5)) % 2 == 1){
+            console.log("----" + xPos + "," + yPos)
+            drawHex(xPos + size*0.85, yPos, size, true)
+        } else{
+            drawHex(xPos, yPos, size, true)
+        }
+
     }
+)
+
+
+
+
+function animate(){
+    requestAnimationFrame(animate);
+
 }
+drawGrid();
+
+animate();
 
 
 /*
