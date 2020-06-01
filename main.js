@@ -7,7 +7,27 @@ let WIDTH = w;
 let HEIGHT = h;
 canvas.width = WIDTH;
 canvas.height = HEIGHT;
+let size = 20
+let xDistance = size*1.7
+let yDistance = size*1.5
 
+let cellHeight = Math.round(HEIGHT/yDistance) + 2
+let cellWidth = Math.round(WIDTH/xDistance) + 2
+
+let board = []
+for (let i = 0; i < cellWidth; i++) {
+    board[i] = new Array(cellHeight);
+}
+for (let i = 0; i < cellHeight.length; i++) {
+    for (let j = 0; j < cellWidth; j++) {
+        board[i][j] = false
+    }
+}
+
+board[10][20] = true
+
+
+console.log(cellWidth + "," + cellHeight)
 class Point{
     constructor(x, y){
         this.x = x
@@ -22,9 +42,7 @@ function pointy_hex_corner(center, size, i){
                 center.y + size * Math.sin(angle_rad))
 }
 
-let size = 10
-let xDistance = size*1.7
-let yDistance = size*1.5
+
 function drawGrid(){
     for(let i =0; i*xDistance < WIDTH; i++){
         for(let j =0; j*yDistance < HEIGHT;j++){
@@ -48,11 +66,13 @@ function drawHex(centerX, centerY, size, fill){
     }
     
     context.lineTo(start.x, start.y)
-    context.strokeStyle = "black";
-    context.lineWidth = 3;
+    context.strokeStyle = "grey";
+    context.lineWidth = 2;
     context.closePath();
     if(fill){
+        context.fillStyle = "grey"
         context.fill()
+        
     }
     context.stroke();
 }
@@ -78,18 +98,6 @@ canvas.addEventListener('mousemove',
         let yPos
         let mouseX = event.clientX
         let mouseY = event.clientY
-
-        context.beginPath();
-        context.arc(mouseX, mouseY, 5,0,Math.PI*2, false);
-        context.strokeStyle = 'red';
-        context.stroke();
-        context.fill();
-        
-
-        
-        yPos = mouseY - mouseY%(size*1.5)
-        
-
         if(mouseX%(size*1.7) > size*0.85){
             xPos = mouseX - mouseX%(size*1.7) + size*1.7
         }else{
@@ -101,35 +109,38 @@ canvas.addEventListener('mousemove',
         }else{
             yPos = mouseY - mouseY%(size*1.5)
         }
-        
 
-        // console.log(xPos + "," + yPos)
-        if((yPos / (size*1.5)) % 2 == 1){
-        //   console.log("----" + xPos + "," + yPos)
-            xPos = xPos - 0.85*size
-        }
-        
 
-        console.log("-----------")
-        console.log(mouseX + "," + mouseX%(size*1.7) + "," + xPos)
-        console.log(mouseY + "," + mouseY%(size*1.5) + "," + yPos)
-        console.log("-----------")
+        let xIndex = Math.round(xPos / (size*1.7))
+        let yIndex = Math.round(yPos / (size*1.5))
 
-        drawHex(xPos, yPos, size, true)
-        context.beginPath();
-        context.arc(xPos, yPos, 5,0,Math.PI*2, false);
-        context.strokeStyle = 'red';
-        context.stroke();
-        context.fill();
+        console.log(xIndex + "," + yIndex)
+        board[xIndex][yIndex] = true
+
 
     }
 )
 
+function drawHexAtIndex(row, col){
+    let xPos = row * 1.7*size
+    let yPos = col *1.5*size
+    if(col % 2 == 1){
+        xPos = xPos - 0.85*size
+    }
+    drawHex(xPos, yPos, size, true)
+}
 
 
 
 function animate(){
     requestAnimationFrame(animate);
+    for(let i =0; i < board.length; i++){
+        for(let j=0; j < board[i].length; j++){
+            if(board[i][j]){
+                drawHexAtIndex(i,j)
+            }
+        }
+    }
 
 }
 drawGrid();
